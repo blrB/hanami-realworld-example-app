@@ -1,0 +1,54 @@
+bundle exec hanami generate model user
+
+bundle exec hanami generate model article
+
+bundle exec hanami generate model comment
+
+bundle exec hanami generate model tag
+
+bundle exec hanami generate model article_tag
+
+bundle exec hanami generate model user_follower
+
+bundle exec hanami generate model article_favorite
+
+----------------
+
+UserRepository.new.create(email: 'bobr8949@yandex.ru', password: '123456', username: 'bobr8949', bio: 'bio', image:'image')
+UserRepository.new.create(email: 'test@yandex.ru', password: '123456', username: 'test', bio: 'test bio', image:'https://image.com/image.png')
+UserRepository.new.create(email: 'test2@yandex.ru', password: '123456', username: 'test2', bio: 'test bio2', image:'https://image.com/image2.png')
+
+ArticleRepository.new.create(slug: "test", title: "Test", description: "description", body: "body", author_id: 1)
+ArticleRepository.new.create(slug: "test-2", title: "Test 2", description: "description2", body: "body2", author_id: 2)
+ArticleRepository.new.create(slug: "test-3", title: "Test 3", description: "description3", body: "body3", author_id: 2)
+
+TagRepository.new.create(name: "test")
+TagRepository.new.create(name: "test 2")
+
+ArticleTagRepository.new.create(article_id: 1, tag_id: 2)
+ArticleTagRepository.new.create(article_id: 1, tag_id: 1)
+ArticleTagRepository.new.create(article_id: 2, tag_id: 1)
+
+
+CommentRepository.new.create(body: "first", article_id: 1, author_id: 1)
+CommentRepository.new.create(body: "test 2", article_id: 1, author_id: 2)
+
+ArticleFavoriteRepository.new.create(article_id: 1, favorit_id: 1)
+ArticleFavoriteRepository.new.create(article_id: 2, favorit_id: 1)
+ArticleFavoriteRepository.new.create(article_id: 3, favorit_id: 1)
+
+UserFollowerRepository.new.create(user_id:1, follower_id: 2)
+UserFollowerRepository.new.create(user_id:2, follower_id: 1)
+UserFollowerRepository.new.create(user_id:3, follower_id: 1)
+
+------------
+u = UserRepository.new.find(username: 'bobr8949')
+u.articles
+u.comments
+
+u = UserRepository.new.find_with_comments(1)
+u.comments
+u = UserRepository.new.find_with_articles(1)
+u.articles
+
+c = C
