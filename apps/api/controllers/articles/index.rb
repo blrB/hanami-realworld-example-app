@@ -4,9 +4,33 @@ module Api
       class Index
         include Api::Action
 
-        def call(params)
-          self.body = 'OK'
+        params do
+          optional(:tag) { str? }
+          optional(:author) { str? }
+          optional(:favorited) { str? }
+          optional(:limit) { int? & lteq?(1024) }
+          optional(:offset) { int? }
         end
+
+        def call(params)
+          halt 422, ErrorMessageTemplate.errors(['Params not valide']) unless params.valid?
+
+          articles = ArticleRepository.new.find_all_with_tags_favorites_author(
+            tag: params.get(:tag),
+            author: params.get(:author),
+            favorited: params.get(:favorited),
+            current_user_id: current_user&.id,
+            limit: params.get(:limit),
+            offset: params.get(:offset)
+          )
+          status 200, ArticleTemplate.list(articles)
+        end
+
+        private
+
+        def authenticate!
+        end
+
       end
     end
   end

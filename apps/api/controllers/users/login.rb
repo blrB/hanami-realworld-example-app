@@ -11,21 +11,17 @@ module Api
           end
         end
 
-        def initialize(repository: UserRepository.new)
-          @repository = repository
-        end
-
         def call(params)
-          halt 401, ErrorMessageTemplate.errors(['Params not valide']) unless params.valid?
+          halt 422, ErrorMessageTemplate.errors(['Params not valide']) unless params.valid?
 
           email = params.get(:user, :email)
           password = params.get(:user, :password)
-          user = @repository.find_by_email(email)
+          user = UserRepository.new.find_by_email(email)
 
           if user && PasswordHelper.valid_password?(password, user)
             status 201, UserTemplate.user(user, JWTHelper.decode(user))
           else
-            status 401, ErrorMessageTemplate.errors(['Authentication failure'])
+            status 401, ErrorMessageTemplate.errors(['Unauthorized requests'])
           end
         end
 

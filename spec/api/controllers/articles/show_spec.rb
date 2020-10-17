@@ -1,6 +1,6 @@
 RSpec.describe Api::Controllers::Articles::Show, type: :action do
   let(:action) { described_class.new }
-  let(:params) { Hash[] }
+  let(:params) { {slug: 'test'} }
 
   it 'is successful' do
     response = action.call(params)

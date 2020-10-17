@@ -37,9 +37,10 @@ ArticleFavoriteRepository.new.create(article_id: 1, favorit_id: 1)
 ArticleFavoriteRepository.new.create(article_id: 2, favorit_id: 1)
 ArticleFavoriteRepository.new.create(article_id: 3, favorit_id: 1)
 
-UserFollowerRepository.new.create(user_id:1, follower_id: 2)
-UserFollowerRepository.new.create(user_id:2, follower_id: 1)
-UserFollowerRepository.new.create(user_id:3, follower_id: 1)
+ActiveRelationshipRepository.new.create(follower_id:1, followed_id: 2)
+ActiveRelationshipRepository.new.create(follower_id:2, followed_id: 1)
+ActiveRelationshipRepository.new.create(follower_id:3, followed_id: 1)
+ActiveRelationshipRepository.new.create(follower_id:3, followed_id: 2)
 
 ------------
 u = UserRepository.new.find(username: 'bobr8949')

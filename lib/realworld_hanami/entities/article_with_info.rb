@@ -1,8 +1,4 @@
-class Article < Hanami::Entity
-
-  def self.title_to_slug(title)
-    title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
-  end
+class ArticleWithStats < Hanami::Entity
 
   def as_json(options={})
     {
@@ -11,10 +7,10 @@ class Article < Hanami::Entity
       description: description,
       body: body,
       tagList: tags,
-      createdAt: created_at.iso8601,
-      updatedAt: updated_at.iso8601,
+      createdAt: created_at.iso8601(3),
+      updatedAt: updated_at.iso8601(3),
       favorited: favorited,
-      favoritesCount: favorites&.size,
+      favoritesCount: favorites_count,
       author: author
     }
   end

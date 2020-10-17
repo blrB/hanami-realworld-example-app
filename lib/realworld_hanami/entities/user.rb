@@ -5,7 +5,7 @@ class User < Hanami::Entity
     result.merge!(email: email) if options[:email]
     result.merge!(token: options[:token]) if options[:token]
     result.merge!(username: username, bio: bio, image: image)
-    result.merge!(following: options[:following]) if options[:following]
+    result.merge!(following: ActiveRelationshipRepository.new.user_is_following?(follower_id: options[:current_user].id, followed_id: id)) if options[:current_user]
     result
   end
 

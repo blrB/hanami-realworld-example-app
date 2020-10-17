@@ -10,7 +10,7 @@ module Api
     private
 
     def authenticate!
-      halt 401 unless authenticated?
+      halt 401, ErrorMessageTemplate.errors(['Unauthorized requests']) unless authenticated?
     end
 
     def authenticated?

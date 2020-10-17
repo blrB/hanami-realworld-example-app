@@ -6,27 +6,25 @@ module Api
 
         params do
           required(:user).schema do
-            required(:email).maybe(:str?)
-            required(:username).maybe(:str?)
-            required(:password).maybe(:str?)
-            required(:image).maybe(:str?)
-            required(:bio).maybe(:str?)
+            optional(:email) { str? }
+            optional(:username) { str? }
+            optional(:password) { str? }
+            optional(:image) { str? }
+            optional(:bio) { str? }
           end
         end
 
-        def initialize(repository: UserRepository.new)
-          @repository = repository
-        end
-
         def call(params)
+          halt 422, ErrorMessageTemplate.errors(['Params not valide']) unless params.valid?
+
           user_params = params.get(:user)
           user_params.merge!(password: PasswordHelper.create_password(params.get(:user, :password))) if params.get(:user, :password)
-          user = @repository.update(current_user.id, user_params) rescue nil
+          user = UserRepository.new.update(current_user.id, user_params) rescue nil
 
           if user
-            status 201, UserTemplate.user(user, JWTHelper.decode(user))
+            status 200, UserTemplate.user(user, JWTHelper.decode(user))
           else
-            status 403, ErrorMessageTemplate.errors(['Forbidden requests'])
+            status 422, ErrorMessageTemplate.errors(['User not updated'])
           end
         end
 

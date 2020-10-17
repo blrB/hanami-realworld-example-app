@@ -4,6 +4,6 @@ RSpec.describe Api::Controllers::Articles::Update, type: :action do
 
   it 'is successful' do
     response = action.call(params)
-    expect(response[0]).to eq 200
+    expect(response[0]).to eq 401
   end
 end

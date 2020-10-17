@@ -4,6 +4,9 @@ class UserRepository < Hanami::Repository
   #   has_many :comments
   #   has_many :articles, as: :favorites, through: :article_favorites
   # end
+  # associations do
+  #   has_many :active_relationships, as: :following
+  # end
 
   def find_by_email(email)
     users.where(email: email).first
@@ -12,6 +15,18 @@ class UserRepository < Hanami::Repository
   def find_by_username(username)
     users.where(username: username).first
   end
+
+  def following(user)
+    users.select(:id, :email, :username, :bio, :image).join(:active_relationships, followed_id: :id).where(follower_id: user.id).to_a
+  end
+
+  # def find_by_id_with_user_relationship(id, relationship_user)
+  #   aggregate(:following).where(id: id).map_to(User).one
+  # end
+  #
+  # def find_by_name_with_user_relationship(username, relationship_user)
+  #   aggregate(:following).where(username: username).map_to(User).one
+  # end
 
   # def find_with_comments(id)
   #   aggregate(:comments).where(id: id).map_to(User).one

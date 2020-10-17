@@ -6,9 +6,9 @@ class UserTemplate < Hanami::Entity
     }.to_json
   end
 
-  def self.profile(user, following = nil)
+  def self.profile(user, current_user = nil)
     {
-      profile: user.as_json(following: following)
+      profile: user.as_json(current_user: current_user)
     }.to_json
   end
 
