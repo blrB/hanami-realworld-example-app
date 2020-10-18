@@ -9,6 +9,7 @@ module Api
             required(:comment).schema do
               required(:body).filled
             end
+            required(:slug) { str? }
           end
 
           def initialize(repository: CommentRepository.new)

@@ -1,7 +1,4 @@
 class TagRepository < Hanami::Repository
-  # associations do
-  #   has_many :articles, through: :article_tags
-  # end
 
   def list
     tags.to_a
@@ -19,9 +16,5 @@ class TagRepository < Hanami::Repository
       article_tag_repository.create(article_id: article.id, tag_id: tag.id) if article
     end
   end
-
-  # def find_with_articles(id)
-  #   aggregate(:articles).where(id: id).map_to(Tag).one
-  # end
 
 end

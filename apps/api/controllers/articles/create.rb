@@ -34,7 +34,7 @@ module Api
               tags: params.get(:article, :tagList)
             ).id
           ).first
-          status 200, ArticleTemplate.article(article)
+          status 201, ArticleTemplate.article(article)
         end
 
       end

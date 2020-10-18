@@ -10,6 +10,7 @@ module Api
             optional(:description) { str? }
             optional(:body) { str? }
           end
+          required(:slug) { str? }
         end
 
         def initialize(repository: ArticleRepository.new)
@@ -32,14 +33,9 @@ module Api
             article_params.merge!(slug: new_slug)
           end
 
-          article = @repository.update(article.id, article_params)
-
-          if article
-            article = @repository.find_all_with_tags_favorites_author_info(current_user_id: current_user.id, id: article.id).first
-            status 200, ArticleTemplate.article(article)
-          else
-            status 422, ErrorMessageTemplate.errors(['Article not updated'])
-          end
+          @repository.update(article.id, article_params)
+          article = @repository.find_all_with_tags_favorites_author_info(current_user_id: current_user.id, id: article.id).first
+          status 200, ArticleTemplate.article(article)
         end
 
       end

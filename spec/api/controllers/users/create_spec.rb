@@ -8,6 +8,7 @@ RSpec.describe Api::Controllers::Users::Create, type: :action do
   describe "create user" do
 
     it 'is successful' do
+      expect(UserRepository.new.users.count).to eq 0
       params = JSON('
         {
           "user":{
@@ -21,9 +22,11 @@ RSpec.describe Api::Controllers::Users::Create, type: :action do
       expect(response[0]).to eq 201
       expect(JSON(response[2][0])["user"]).to include( "email" => "jake@jake.jake", "username" => "Jacob", "bio" => nil, "image" => nil )
       expect(JSON(response[2][0])["user"]["token"]).to be_an_instance_of(String)
+      expect(UserRepository.new.users.count).to eq 1
     end
 
     it 'is email already registered' do
+      expect(UserRepository.new.users.count).to eq 1
       params = JSON('
         {
           "user":{

@@ -1,8 +1,4 @@
 class ActiveRelationshipRepository < Hanami::Repository
-  # associations do
-  #   belongs_to :user
-  #   belongs_to :user
-  # end
 
   def user_is_following?(follower_id:, followed_id:)
     active_relationships.where(follower_id: follower_id, followed_id: followed_id).exist?

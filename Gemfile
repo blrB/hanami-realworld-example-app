@@ -28,6 +28,7 @@ end
 group :test do
   gem 'rspec'
   gem 'capybara'
+  gem 'factory_bot'
 end
 
 group :production do

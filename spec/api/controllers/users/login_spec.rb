@@ -1,15 +1,7 @@
 RSpec.describe Api::Controllers::Users::Login, type: :action do
   let(:repository) { UserRepository.new }
   let(:action) { described_class.new }
-  let(:user) {
-    repository.create(
-      {
-        "username": "Jacob",
-        "email": "jake@jake.jake",
-        "password": PasswordHelper.create_password("jakejake")
-      }
-    )
-  }
+  let(:user) { repository.create(FactoryBot.attributes_for(:user)) }
 
   describe "login user" do
 

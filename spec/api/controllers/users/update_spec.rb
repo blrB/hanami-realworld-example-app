@@ -1,24 +1,8 @@
 RSpec.describe Api::Controllers::Users::Update, type: :action do
   let(:action) { described_class.new }
   let(:repository) { UserRepository.new }
-  let(:user) {
-    repository.create(
-      {
-        "username": "Jacob",
-        "email": "jake@jake.jake",
-        "password": PasswordHelper.create_password("jakejake")
-      }
-    )
-  }
-  let(:user2) {
-    repository.create(
-      {
-        "username": "Jacob2",
-        "email": "jake2@jake.jake",
-        "password": PasswordHelper.create_password("jakejake2")
-      }
-    )
-  }
+  let(:user) { repository.create(FactoryBot.attributes_for(:user)) }
+  let(:user2) { repository.create(FactoryBot.attributes_for(:user2)) }
 
   describe "update user" do
 
@@ -57,8 +41,8 @@ RSpec.describe Api::Controllers::Users::Update, type: :action do
         }
       ')
       response = action.call(params.merge('HTTP_AUTHORIZATION' => "Token #{JWTHelper.decode(user)}"))
-      expect(response[0]).to eq 422
-      expect(JSON(response[2][0])).to include("errors" => { "body" => ['User not updated'] })
+      expect(response[0]).to eq 403
+      expect(JSON(response[2][0])).to include("errors" => { "body" => ['Email already registered'] })
     end
 
     it 'is unsuccessful (rewrite username)' do
@@ -70,8 +54,8 @@ RSpec.describe Api::Controllers::Users::Update, type: :action do
         }
       ')
       response = action.call(params.merge('HTTP_AUTHORIZATION' => "Token #{JWTHelper.decode(user)}"))
-      expect(response[0]).to eq 422
-      expect(JSON(response[2][0])).to include("errors" => { "body" => ['User not updated'] })
+      expect(response[0]).to eq 403
+      expect(JSON(response[2][0])).to include("errors" => { "body" => ['Username already registered'] })
     end
 
 

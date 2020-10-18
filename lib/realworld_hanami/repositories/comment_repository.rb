@@ -1,7 +1,6 @@
 class CommentRepository < Hanami::Repository
   associations do
     belongs_to :user, as: :author
-    # belongs_to :article
   end
 
   def find_by_id_and_article_id(id:, article_id:)

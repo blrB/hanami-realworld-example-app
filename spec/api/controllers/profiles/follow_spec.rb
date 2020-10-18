@@ -2,24 +2,8 @@ RSpec.describe Api::Controllers::Profiles::Follow, type: :action do
   let(:action) { described_class.new }
   let(:params) { { username: "Jacob2" } }
   let(:repository) { UserRepository.new }
-  let(:user) {
-    repository.create(
-      {
-        "username": "Jacob",
-        "email": "jake@jake.jake",
-        "password": PasswordHelper.create_password("jakejake")
-      }
-    )
-  }
-  let(:user2) {
-    repository.create(
-      {
-        "username": "Jacob2",
-        "email": "jake2@jake.jake",
-        "password": PasswordHelper.create_password("jakejake2")
-      }
-    )
-  }
+  let(:user) { repository.create(FactoryBot.attributes_for(:user)) }
+  let(:user2) { repository.create(FactoryBot.attributes_for(:user2)) }
 
   describe "follow user" do
 
