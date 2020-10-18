@@ -12,9 +12,9 @@ module Api
         def call(params)
           halt 422, ErrorMessageTemplate.errors(['Params not valide']) unless params.valid?
 
-          articles = ArticleRepository.new.find_all_with_tags_favorites_author(
-            author_ids: UserRepository.new.following(current_user).map(&:id),
+          articles = ArticleRepository.new.find_all_with_tags_favorites_author_info(
             current_user_id: current_user.id,
+            author_ids: UserRepository.new.following(current_user).map(&:id),
             limit: params.get(:limit),
             offset: params.get(:offset)
           )

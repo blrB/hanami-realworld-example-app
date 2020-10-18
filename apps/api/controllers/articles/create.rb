@@ -20,9 +20,13 @@ module Api
         def call(params)
           halt 422, ErrorMessageTemplate.errors(['Params not valide']) unless params.valid?
 
-          article = @repository.find_all_with_tags_favorites_author(
+          slug = Article.title_to_slug(params.get(:article, :title))
+          halt 422, ErrorMessageTemplate.errors(['Article with this title already exist']) if @repository.exist_by_slug(slug)
+
+          article = @repository.find_all_with_tags_favorites_author_info(
+            current_user_id: current_user.id,
             id: @repository.create_with_tags(
-              slug: Article.title_to_slug(params.get(:article, :title)),
+              slug: slug,
               title: params.get(:article, :title),
               description: params.get(:article, :description),
               body: params.get(:article, :body),

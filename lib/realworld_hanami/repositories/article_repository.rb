@@ -6,6 +6,14 @@ class ArticleRepository < Hanami::Repository
    #has_many :users, as: :favorites, through: :article_favorites
   end
 
+  def exist_by_slug(slug)
+    articles.where(slug: slug).exist?
+  end
+
+  def find_by_slug(slug)
+    articles.where(slug: slug).one
+  end
+
   def create_with_tags(data)
     article = create(data)
     if data[:tags]
@@ -44,7 +52,7 @@ class ArticleRepository < Hanami::Repository
   end
 
   # TODO - try to make this code beautifier :)
-  def find_all_with_tags_favorites_author(id: nil, slug: nil, author_ids: nil, tag: nil, author: nil, favorited: nil, current_user_id: nil, limit: 20, offset: 0)
+  def find_all_with_tags_favorites_author_info(id: nil, slug: nil, author_ids: nil, tag: nil, author: nil, favorited: nil, current_user_id: nil, limit: 20, offset: 0)
     dataset = articles.select(:id).qualified.limit(limit).offset(offset)
     dataset = dataset.where(Sequel[:articles][:id] => id) if id
     dataset = dataset.where(Sequel[:articles][:slug] => slug) if slug
@@ -54,11 +62,12 @@ class ArticleRepository < Hanami::Repository
     dataset = dataset.join(:article_favorites, article_id: :id).join(:users, { Sequel[:favorit_user][:id] => :favorit_id }, { table_alias: :favorit_user }).where(Sequel[:favorit_user][:username] => favorited) if favorited
 
     # I don't need all favorites users, only count
-    #aggregate(:tags, :favorites, :author).where(id: dataset.to_a.map(&:id)).order { created_at.desc }.map_to(Article).to_a
-
+    # aggregate(:tags, :favorites, :author).where(id: dataset.to_a.map(&:id)).order { created_at.desc }.map_to(Article).to_a
     ids = dataset.to_a.map(&:id)
-    articles_array = aggregate(:tags, :author).qualified.where(id: dataset.to_a.map(&:id)).order { created_at.desc }.map_to(Article).to_a
-    articles_info = articles.dataset. # I use Seqyel, due to NoMethodError: undefined method `primary_key?' for #<Sequel::SQL::AliasedExpression:0x0000000004769978> for select_append
+    articles_array = aggregate(:tags, :author).qualified.where(id: ids).order { created_at.desc }.map_to(Article).to_a
+
+    # I use Seqyel, due to `NoMethodError: undefined method `primary_key?' for #<Sequel::SQL::AliasedExpression:0x0000000004769978>` for columns in select_append
+    articles_info = articles.dataset.
       select(articles[:id]).
       select_append(Sequel[:active_relationships][:follower_id].as(:author_following)).
       select_append(Sequel[:user_favorited][:favorit_id].as(:favorited)).
@@ -71,11 +80,11 @@ class ArticleRepository < Hanami::Repository
       to_a.
       map { |attributes| UserWithInfo.new(attributes) }
 
-    articles_array.map do |articles|
-      info = articles_info.find { |a| articles.id == a.id}
-      author_with_info = articles.author.to_h.merge(following: !!info.author_following)
-      article_with_info = articles.to_h.merge( favorited: !!info.favorited, favorites_count: info.favorites_count, author: UserWithInfo.new(author_with_info))
-      ArticleWithStats.new(article_with_info)
+    articles_array.map do |article|
+      info = articles_info.find { |a| article.id == a.id}
+      author_with_info = article.author.to_h.merge(following: !!info.author_following)
+      article_with_info = article.to_h.merge( favorited: !!info.favorited, favorites_count: info.favorites_count, author: UserWithInfo.new(author_with_info))
+      ArticleWithInfo.new(article_with_info)
     end
   end
 

@@ -1,16 +1,11 @@
-class ArticleWithInfo < Hanami::Entity
+class CommentWithInfo < Hanami::Entity
 
   def as_json(options={})
     {
-      slug: slug,
-      title: title,
-      description: description,
-      body: body,
-      tagList: tags,
+      id: id,
       createdAt: created_at.iso8601(3),
       updatedAt: updated_at.iso8601(3),
-      favorited: favorited,
-      favoritesCount: favorites_count,
+      body: body,
       author: author
     }
   end

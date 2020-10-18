@@ -1,4 +1,4 @@
-RSpec.describe Api::Controllers::Articles::CommentsShow, type: :action do
+RSpec.describe Api::Controllers::Articles::Comments::Destroy, type: :action do
   let(:action) { described_class.new }
   let(:params) { Hash[] }
 
