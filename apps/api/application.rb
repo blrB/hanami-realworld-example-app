@@ -1,4 +1,5 @@
 require_relative './controllers/authentication'
+require_relative './controllers/cors_headers'
 
 module Api
   class Application < Hanami::Application
@@ -16,7 +17,8 @@ module Api
       routes 'config/routes'
 
       controller.prepare do
-        include Api::Authentication
+        include Api::Controllers::Authentication
+        include Api::Controllers::CorsHeaders
       end
 
     end

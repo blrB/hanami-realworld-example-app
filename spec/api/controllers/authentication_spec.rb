@@ -1,4 +1,4 @@
-RSpec.describe Api::Authentication, type: :action do
+RSpec.describe Api::Controllers::Authentication, type: :action do
   let(:action) { Api::Controllers::Users::Show.new }
   let(:params) { Hash[] }
   let(:repository) { UserRepository.new }
