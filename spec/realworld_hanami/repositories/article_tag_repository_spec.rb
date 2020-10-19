@@ -1,3 +1,5 @@
 RSpec.describe ArticleTagRepository, type: :repository do
-  # place your tests here
+
+  # repository not have methods
+
 end

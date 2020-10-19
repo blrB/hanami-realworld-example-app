@@ -1,3 +1,6 @@
+require 'simplecov'
+SimpleCov.start
+
 # Require this file for unit tests
 ENV['HANAMI_ENV'] ||= 'test'
 

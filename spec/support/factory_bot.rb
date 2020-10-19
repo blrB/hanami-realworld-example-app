@@ -33,7 +33,7 @@ FactoryBot.define do
     title { "How to train your dragon 3" }
     description { "Ever wonder how?(3)" }
     body { "It takes a Jacobian 3" }
-    tags { ["dragons", "training"] }
+    tags { ["dragons3", "training3"] }
   end
 
   factory :comment do
@@ -46,6 +46,14 @@ FactoryBot.define do
 
   factory :comment3, class: "Comment" do
     body { "Comment 3." }
+  end
+
+  factory :tag do
+    name { "dragons" }
+  end
+
+  factory :tag2, class: "Tag" do
+    name { "training" }
   end
 
 end

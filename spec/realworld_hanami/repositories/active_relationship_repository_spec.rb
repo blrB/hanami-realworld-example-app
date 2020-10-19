@@ -1,31 +1,18 @@
 RSpec.describe ActiveRelationshipRepository, type: :repository do
   let(:repository) { described_class.new }
   let(:user_repository) { UserRepository.new }
+  let(:user) { user_repository.create(FactoryBot.attributes_for(:user)) }
+  let(:user2) { user_repository.create(FactoryBot.attributes_for(:user2)) }
 
-  describe "list of tags" do
 
-    before do
-      repository.clear
-      user_repository.clear
-      user
-      user2
-    end
+  before do
+    repository.clear
+    user_repository.clear
+    user
+    user2
+  end
 
-    let(:user) do
-      user_repository.create(
-        email: "test@example.com",
-        username: "username",
-        password: PasswordHelper.create_password("password")
-      )
-    end
-
-    let(:user2) do
-      user_repository.create(
-        email: "test2@example.com",
-        username: "username2",
-        password: PasswordHelper.create_password("password")
-      )
-    end
+  describe "active relationship repository works" do
 
     it "can check" do
       expect(repository.user_is_following?(follower_id: user.id, followed_id: user2.id)).to eq false

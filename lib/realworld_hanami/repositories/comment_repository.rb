@@ -7,10 +7,6 @@ class CommentRepository < Hanami::Repository
     comments.where(id: id, article_id: article_id).one
   end
 
-  def find_with_author(id)
-    aggregate(:author).where(id: id).map_to(Comment).one
-  end
-
   def find_with_author_info(id: nil, article_id: nil, current_user_id: nil)
     dataset = aggregate(:author)
     dataset = dataset.where(id: id) if id

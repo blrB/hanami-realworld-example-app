@@ -90,10 +90,10 @@ RSpec.describe Api::Controllers::Articles::Index, type: :action do
       expect(response_hash[:articlesCount]).to eq 2
 
       article_from_response = response_hash[:articles].first
-      expect(article_from_response).to include({ "slug": "how-to-train-your-dragon-3" })
+      expect(article_from_response).to include({ "slug": "how-to-train-your-dragon-3", "favorited": false, "favoritesCount": 1 })
 
       article_from_response = response_hash[:articles].last
-      expect(article_from_response).to include({ "slug": "how-to-train-your-dragon" })
+      expect(article_from_response).to include({ "slug": "how-to-train-your-dragon", "favorited": false, "favoritesCount": 1 })
     end
 
     it 'is successful with param "limit"' do

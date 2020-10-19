@@ -1,69 +1,45 @@
 RSpec.describe UserRepository, type: :repository do
   let(:repository) { described_class.new }
+  let(:user) { repository.create(FactoryBot.attributes_for(:user)) }
+  let(:user2) { repository.create(FactoryBot.attributes_for(:user2)) }
 
-  describe "find user by email" do
-
-    before do
-      repository.clear
-      user
-    end
-
-    let(:email) { "test@example.com" }
-    let(:password) { "password" }
-    let(:username) { "tester" }
-    let(:user) do
-      repository.create(
-        email: email,
-        username: username,
-        password: PasswordHelper.create_password(password)
-      )
-    end
-
-    describe "by existent email" do
-      it "retrieves appropriate record" do
-        expect(repository.find_by_email("test@example.com")).to eq(user)
-      end
-    end
-
-    describe "by not existent email" do
-      let(:email) { "wrong@example.com" }
-
-      it do
-        expect(repository.find_by_email("test@example.com")).to be_nil
-      end
-    end
-  end
-
-  describe "find user by username" do
+  describe "user repository works" do
 
     before do
       repository.clear
       user
+      user2
     end
 
-    let(:email) { "test@example.com" }
-    let(:password) { "password" }
-    let(:username) { "tester" }
-    let(:user) do
-      repository.create(
-        email: email,
-        username: username,
-        password: PasswordHelper.create_password(password)
-      )
+    it "retrieves find_by_email appropriate record" do
+      expect(repository.find_by_email("jake@jake.jake")).to eq(user)
     end
 
-    describe "by existent username" do
-      it "retrieves appropriate record" do
-        expect(repository.find_by_username("tester")).to eq(user)
-      end
+    it "retrieves find_by_email not found record" do
+      expect(repository.find_by_email("wrong@example.com")).to be_nil
     end
 
-    describe "by not existent username" do
-      let(:username) { "wrong@example.com" }
+    it "retrieves find_by_username appropriate record" do
+      expect(repository.find_by_username("Jacob")).to eq(user)
+    end
 
-      it do
-        expect(repository.find_by_username("test@example.com")).to be_nil
-      end
+    it "retrieves find_by_username not found record" do
+      expect(repository.find_by_username("not_jacob")).to be_nil
+    end
+
+    it "retrieves following appropriate record" do
+      result = repository.following(user)
+      expect(result).to be_an_instance_of(Array)
+      expect(result.size).to eq 0
+    end
+
+    it "retrieves following appropriate record when following" do
+      ActiveRelationshipRepository.new.create(follower_id: user.id, followed_id: user2.id)
+
+      result = repository.following(user)
+      expect(result).to be_an_instance_of(Array)
+      expect(result.size).to eq 1
+      expect(result.first).to include(id: user2.id, email: user2.email, username: user2.username)
     end
   end
 

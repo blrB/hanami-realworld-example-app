@@ -27,11 +27,7 @@ module Api
             password: PasswordHelper.create_password(params.get(:user, :password))
           )
 
-          if user
-            status 201, UserTemplate.user(user, JWTHelper.decode(user))
-          else
-            status 422, ErrorMessageTemplate.errors(['User not created'])
-          end
+          status 201, UserTemplate.user(user, JWTHelper.decode(user))
         end
 
         private

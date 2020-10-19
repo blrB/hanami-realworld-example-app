@@ -29,6 +29,7 @@ group :test do
   gem 'rspec'
   gem 'capybara'
   gem 'factory_bot'
+  gem 'simplecov'
 end
 
 group :production do
