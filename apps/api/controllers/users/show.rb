@@ -5,7 +5,7 @@ module Api
         include Api::Action
 
         def call(params)
-          status 200, UserTemplate.user(current_user, token)
+          status 200, UserTemplate.user(current_user)
         end
       end
     end

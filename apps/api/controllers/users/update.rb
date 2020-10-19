@@ -36,7 +36,7 @@ module Api
 
           user = @repository.update(current_user.id, user_params)
 
-          status 200, UserTemplate.user(@repository.update(current_user.id, user_params), JWTHelper.decode(user))
+          status 200, UserTemplate.user(@repository.update(current_user.id, user_params))
         end
 
       end

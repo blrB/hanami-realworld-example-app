@@ -8,5 +8,5 @@ RSpec.describe Article, type: :entity do
       expect(class_entity.title_to_slug('test test (UPDATED)')).to eq 'test-test-updated'
     end
   end
-  
+
 end

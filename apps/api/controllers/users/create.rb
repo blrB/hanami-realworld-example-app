@@ -21,13 +21,13 @@ module Api
           halt 403, ErrorMessageTemplate.errors(['Email already registered']) if @repository.find_by_email(params.get(:user, :email))
           halt 403, ErrorMessageTemplate.errors(['Username already registered']) if @repository.find_by_username(params.get(:user, :username))
 
-          user = UserRepository.new.create(
+          user = @repository.create(
             username: params.get(:user, :username),
             email: params.get(:user, :email),
             password: PasswordHelper.create_password(params.get(:user, :password))
           )
 
-          status 201, UserTemplate.user(user, JWTHelper.decode(user))
+          status 201, UserTemplate.user(user)
         end
 
         private

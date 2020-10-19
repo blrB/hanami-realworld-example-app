@@ -19,7 +19,7 @@ module Api
           user = UserRepository.new.find_by_email(email)
 
           if user && PasswordHelper.valid_password?(password, user)
-            status 201, UserTemplate.user(user, JWTHelper.decode(user))
+            status 201, UserTemplate.user(user)
           else
             status 401, ErrorMessageTemplate.errors(['Unauthorized requests'])
           end

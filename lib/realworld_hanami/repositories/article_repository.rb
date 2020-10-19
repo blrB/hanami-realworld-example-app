@@ -21,7 +21,6 @@ class ArticleRepository < Hanami::Repository
     article
   end
 
-  # TODO - try to make this code beautifier :)
   def find_all_with_tags_favorites_author_info(id: nil, slug: nil, author_ids: nil, tag: nil, author: nil, favorited: nil, current_user_id: nil, limit: 20, offset: 0)
     dataset = articles.select(:id).qualified.limit(limit).offset(offset).order { articles[:created_at].desc }
     dataset = dataset.where(Sequel[:articles][:id] => id) if id
@@ -31,31 +30,51 @@ class ArticleRepository < Hanami::Repository
     dataset = dataset.join(:users, Sequel[:users][:id] => Sequel[:articles][:author_id]).where(Sequel[:users][:username] => author) if author
     dataset = dataset.join(:article_favorites, article_id: :id).join(:users, { Sequel[:favorit_user][:id] => :favorit_id }, { table_alias: :favorit_user }).where(Sequel[:favorit_user][:username] => favorited) if favorited
 
-    # I don't need all favorites users, only count
-    # aggregate(:tags, :favorites, :author).where(id: dataset.to_a.map(&:id)).order { created_at.desc }.map_to(Article).to_a
     ids = dataset.to_a.map(&:id)
     articles_array = aggregate(:tags, :author).qualified.where(id: ids).order { created_at.desc }.map_to(Article).to_a
 
-    # I use Seqyel, due to `NoMethodError: undefined method `primary_key?' for #<Sequel::SQL::AliasedExpression:0x0000000004769978>` for columns in select_append
-    articles_info = articles.dataset.
-      select(articles[:id]).
-      select_append(Sequel[:active_relationships][:follower_id].as(:author_following)).
-      select_append(Sequel[:user_favorited][:favorit_id].as(:favorited)).
-      select_append{ Sequel.as(count(Sequel[:article_favorites][:favorit_id]), :favorites_count) }.
-      left_join(:article_favorites, Sequel[:article_favorites][:article_id] => articles[:id]).
-      left_join(:article_favorites, { Sequel[:user_favorited][:favorit_id] => current_user_id, Sequel[:user_favorited][:article_id] => articles[:id] }, { table_alias: :user_favorited }).
-      left_join(:active_relationships, { Sequel[:active_relationships][:follower_id] => current_user_id, Sequel[:active_relationships][:followed_id] => articles[:author_id] }, {}).
-      where(articles[:id] => ids).
-      group(articles[:id]).
-      to_a.
-      map { |attributes| UserWithInfo.new(attributes) }
+    following_author_articles = articles_ids_with_author_following_by_ids(ids: ids, current_user_id: current_user_id)
+    favorited_articles = articles_ids_favorited_by_ids(ids: ids, current_user_id: current_user_id)
+    favorites_count_articles = articles_ids_with_favorites_count_by_ids(ids: ids)
 
     articles_array.map do |article|
-      info = articles_info.find { |a| article.id == a.id}
-      author_with_info = article.author.to_h.merge(following: !!info.author_following)
-      article_with_info = article.to_h.merge( favorited: !!info.favorited, favorites_count: info.favorites_count, author: UserWithInfo.new(author_with_info))
+      author_with_info = article.author.to_h.merge(following: following_author_articles.include?(article.id))
+      article_with_info = article.to_h.merge(favorited: favorited_articles.include?(article.id), favorites_count: favorites_count_articles[article.id], author: UserWithInfo.new(author_with_info))
       ArticleWithInfo.new(article_with_info)
     end
+  end
+
+  private
+
+  def articles_ids_with_author_following_by_ids(ids:, current_user_id: nil)
+    articles.
+      select(:id).
+      left_join(:active_relationships, follower_id: current_user_id, followed_id: :author_id).
+      where(id: ids).
+      exclude(follower_id: nil).
+      to_a.
+      map(&:id)
+  end
+
+  def articles_ids_favorited_by_ids(ids:, current_user_id: nil)
+    articles.
+      select(:id).
+      left_join(:article_favorites, favorit_id: current_user_id, article_id: :id).
+      where(id: ids).
+      exclude(favorit_id: nil).
+      to_a.
+      map(&:id)
+  end
+
+  def articles_ids_with_favorites_count_by_ids(ids:)
+    results = articles.dataset.
+      select(:id).
+      left_join(:article_favorites, article_id: :id).
+      where(id: ids).
+      exclude(favorit_id: nil).
+      group_and_count(:id).
+      as_hash(:id, :count)
+    Hash[ids.sort.map { |id| [id, results[id] || 0] }]
   end
 
 end

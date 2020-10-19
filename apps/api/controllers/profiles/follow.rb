@@ -9,7 +9,7 @@ module Api
           halt 404, ErrorMessageTemplate.errors(['User not exist']) unless user
 
           ActiveRelationshipRepository.new.find_or_create(follower_id: current_user.id, followed_id: user.id)
-          status 200,  UserTemplate.profile(user, current_user)
+          status 200,  UserTemplate.profile(user, true)
         end
       end
     end
